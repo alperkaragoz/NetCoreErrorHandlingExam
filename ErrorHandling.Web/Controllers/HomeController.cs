@@ -25,7 +25,7 @@ namespace ErrorHandling.Web.Controllers
 
         public IActionResult Privacy()
         {
-            throw new FileNotFoundException();
+            //throw new FileNotFoundException();
             return View();
         }
 
