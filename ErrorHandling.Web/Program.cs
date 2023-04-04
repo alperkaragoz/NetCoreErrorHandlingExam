@@ -1,3 +1,7 @@
+
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -19,7 +23,18 @@ else
     // Uygulamada herhangi bir hata alýndýðýnda kullanýcýyý hata sayfasýna yönlendiriyor.Development-Production-Staging ortamlarýndan baðýmsýz olarak test amaçlý her türlü Exception Handler' ý çalýþtýrýyoruz.
     // Sistem eðer hata alýrsa, o an ki hata alýnan sayfa url'i sabit kalýyor fakat arka planda Home/Error sayfasýndaki hata gösteriliyor.
     // Bunun amacý; kullanýcý hata aldýðý sayfada refresh(F5) yaptýðýnda, eðer hata anlýksa veya düzelmiþse Home/Error sayfasýnda deðil ilgili sayfada kalmasý uygun olacaðý için bu yapýlýyor.
-    app.UseExceptionHandler("/Home/Error");
+    //app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler(context =>
+    {
+        // Ýçerisinde sayfa göstereceðimiz için Run metotunu çalýþtýrýyoruz.
+        context.Run(async page =>
+        {
+            // Server taraflý bir hata olduðu için 500 ile baþlatýyoruz. Client hatasý olsaydý 400 ile baþlatacaktýk.Baþarýlý olduðu durumlarda 200, yönlendirme olduðu durumlarda 300 kodlarý ile baþlar. 
+            page.Response.StatusCode = 500;
+            page.Response.ContentType = "text/html";
+            await page.Response.WriteAsync($"<html><head></head><h1>An error occured! {page.Response.StatusCode}</h1></html>");
+        });
+    });
 
 
     // 1.Yöntem --------------
@@ -38,6 +53,11 @@ else
 
     // 3.Yöntem --------------
     //app.UseStatusCodePages();
+
+    // Middleware'in gözükebilmesi için Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore'u kütüphaneye eklememiz gerekiyor.
+    // Entity Framework db hata sayfalarý.
+    app.UseDatabaseErrorPage();
+
 }
 
 app.UseHttpsRedirection();
