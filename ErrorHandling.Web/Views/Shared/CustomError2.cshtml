@@ -1,0 +1,18 @@
+﻿@{
+    Exception ex = ViewData["Exception"] as Exception;
+    ViewData["Title"] = "Custom Error2";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CustomError2</title>
+</head>
+<body>
+    <h2> @ex.Message</h2>
+    <h3>Error Page2: @ViewData["url"]</h3>
+</body>
+</html>
